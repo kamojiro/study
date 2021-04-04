@@ -1,0 +1,10 @@
+https://tianpan.co/notes/2016-02-13-crack-the-system-design-interview
+**
+*** Step 1. RequirementsとSpecをはっきりさせる
+    feature, scaling
+*** Step 2. 高いレベルのデザインをスケッチする
+    まずは全体像を示す。詳細は後
+*** Step 3. ここのコンポーネントとどのように相互作用するか、を詳細に説明する
+
+** システム設計例題
+https://github.com/donnemartin/system-design-primer/blob/master/README-ja.md#他のシステム設計面接例題
