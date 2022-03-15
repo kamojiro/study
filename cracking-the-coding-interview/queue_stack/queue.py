@@ -38,13 +38,18 @@ class Queue:
     # Method to remove an item from queue
     def dequeue(self):
          
-        if self.isEmpty():
+        if self.is_empty():
             return
         temp = self.front
         self.front = temp.next
- 
         if(self.front == None):
             self.rear = None
+        return temp.data
+
+    def peek(self):
+        if self.is_empty():
+            return
+        return self.front.data
  
 # Driver Code
 if __name__== '__main__':
