@@ -1,4 +1,3 @@
-from queue import Queue
 
 def build_order(n, restriction):
     sink = [0]*n
