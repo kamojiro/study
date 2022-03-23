@@ -13,7 +13,6 @@ class Node:
     def add_right_child(self, node):
         node.parent = self
         self.right = node
-
 class BinaryTree:
     def __init__(self, node):
         self.root = node
@@ -69,9 +68,4 @@ def test():
 
 if __name__ == "__main__":
     test()
-
-
-
-
-
 
