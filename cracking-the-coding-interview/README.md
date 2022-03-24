@@ -7,3 +7,5 @@
 - [ ] Chapter 4: Trees and Graphs
   - [ ] Random Node
   - [ ] Paths with Sum
+- [ ] Chapter 5: Bit Manipuration
+  - [ ] Draw Line
