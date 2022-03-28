@@ -1,6 +1,7 @@
-import imp
 from queue import Queue
+
 from fundamental_tree import Node, Tree
+
 
 def validate_bst(tree):
     queue = Queue()

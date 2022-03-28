@@ -1,6 +1,7 @@
 import sys
 from copy import deepcopy
 
+
 class Node:
     def __init__(self, name=None, parent=None, left=None, right=None):
         self.name = name
