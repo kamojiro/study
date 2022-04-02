@@ -9,3 +9,11 @@
   - [ ] Paths with Sum
 - [ ] Chapter 5: Bit Manipuration
   - [ ] Draw Line
+- [ ] Chapter 7: Object-oriented design
+  - [ ] Jigsaw puzzle
+  - [ ] Chat server
+  - [ ] Othello
+  - [ ] Circular array
+  - [ ] Minesweeper
+  - [ ] File system
+  - [ ] Hash table
