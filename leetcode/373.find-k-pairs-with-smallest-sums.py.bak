@@ -1,0 +1,47 @@
+#
+# @lc app=leetcode id=373 lang=python3
+#
+# [373] Find K Pairs with Smallest Sums
+#
+
+# @lc code=start
+from bisect import bisect_right
+class Solution:
+    def kSmallestPairs(self, nums1: List[int], nums2: List[int], k: int) -> List[List[int]]:
+        l = -2*10**9-1
+        r = 2*10**9
+        while r - l > 1:
+            m = (l+r)//2
+            count = 0
+            for x in nums1:
+                count += bisect_right(nums2, m-x)
+            if count < k:
+                l = m
+            else:
+                r = m
+        ret = []
+        res = []
+        ret_times = 0
+        res_times = 0
+        for x in nums1:
+            if ret_times >= k:
+                break
+            for y in nums2:
+                if x+y == r:
+                    if res_times < k:
+                        res.append([x,y])
+                        res_times += 1
+                    else:
+                        break
+                elif x+y < r:
+                    ret.append([x,y])
+                    ret_times += 1
+                    if ret_times >= k:
+                        break
+                else:
+                    break
+        ret.extend(res)
+        return ret[:k]
+
+# @lc code=end
+
