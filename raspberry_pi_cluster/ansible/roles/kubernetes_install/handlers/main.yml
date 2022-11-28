@@ -1,0 +1,5 @@
+---
+
+
+- name: reboot
+  shell: /sbin/shutdown -r now

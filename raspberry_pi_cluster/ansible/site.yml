@@ -1,0 +1,18 @@
+- hosts: k8s_master
+  remote_user: ubuntu
+  become: yes
+  gather_facts: true
+  vars:
+    os_version: xUbuntu_20.04
+    crio_version: 1.25
+  roles:
+    - network_setting
+    # - kubernetes_install
+  tasks:
+    - name: print ansible_host
+      debug:
+        msg:
+          - "{{ ansible_host }}"
+          - "{{ inventory_hostname }}"
+          - "{{ ansible_distribution_major_version }}"
+

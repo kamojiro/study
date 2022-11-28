@@ -1,0 +1,182 @@
+---
+
+- name: memory enabled
+  lineinfile:
+    path: /boot/firmware/cmdline.txt
+    regexp: 'splash$'
+    line: 'splash cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+  notify:
+    - reboot
+
+- name: iptables process through bridge
+  shell: modprobe br_netfilter
+
+- name: make k8s.conf
+  copy:
+    remote_src: no
+    src: k8s.conf
+    dest: /etc/sysctl.d/k8s.conf
+
+- name: activate k8s.conf
+  shell: sysctl --system
+
+- name: inactivate swap
+  shell: swapoff -a
+
+- name: install iptables
+  apt:
+    name:
+      - iptables
+      - arptables
+      - ebtables
+  when:
+    - ansible_distribution_major_version == "22"
+
+- name: activate legacy version
+  shell: |
+    update-alternatives --set iptables /usr/sbin/iptables-legacy
+    update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+    update-alternatives --set arptables /usr/sbin/arptables-legacy
+    update-alternatives --set ebtables /usr/sbin/ebtables-legacy
+  when:
+    - ansible_distribution_major_version == "22"
+
+- name: make containerd.conf
+  copy:
+    remote_src: no
+    src: containerd.conf
+    dest: /etc/modules-load.d/containerd.conf
+
+- name: activate overlay
+  shell: |
+    modprobe overlay
+    modprobe br_netfilter
+
+- name: make 99-kubernetes-cri.conf
+  copy:
+    remote_src: no
+    src: 99-kubernetes-cri.conf
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+
+- name: activate 99-kubernetes-cri.conf
+  shell: sysctl --system
+
+# - name: download crio
+#   shell: |
+#     echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ os_version }}/ /" > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+#     echo "deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_version }}/{{ os_version }}/ /" > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable:cri-o:$VERSION.list
+#     curl -L https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ crio_version }}/{{ os_version }}/Release.key | apt-key add -
+#     curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ os_version }}/Release.key | apt-key add -
+
+
+
+# - name: prepare to install cri-o
+#   apt:
+#     name:
+#       - jq
+  
+
+# - name: install cri-o
+#   shell: curl https://raw.githubusercontent.com/cri-o/cri-o/main/scripts/get | bash
+#   # apt:
+#   #   name:
+#   #     - cri-o
+#   #     - cri-o-runc
+
+# - name: start cri-o
+#   systemd:
+#     name: crio
+#     state: started
+#     daemon_reload: yes
+#     enabled: yes
+
+- name: prepare to install containerd
+  apt:
+    name:
+      - curl
+      - gnupg2
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+
+# - name: make /etc/apt/keyrings directory
+#   file:
+#     path: /etc/apt/keyrings
+#     state: directory
+#     owner: "root"
+#     group: "root"
+#     mode: "775"
+
+- name: download gpg key for containerd
+  shell: |
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+- name: apt update
+  apt:
+    update_cache: yes
+
+- name: install containerd
+  apt:
+    name: containerd.io
+
+- name: make /etc/containerd directory
+  file:
+    path: /etc/containerd
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "775"
+
+- name: containerd config
+  shell: |
+    containerd config default | tee /etc/containerd/config.toml >/dev/null 2>&1
+    sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+  
+- name: restart containerd
+  systemd:
+    name: containerd
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+
+- name: prepare install kube
+  apt:
+    name:
+      - apt-transport-https
+      - curl
+
+- name: download key
+  shell: curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+- name: make Kubernetes deb
+  copy:
+    remote_src: no
+    src: kubernetes.list
+    dest: /etc/apt/sources.list.d/kubernetes.list
+
+- name: apt update
+  apt:
+    update_cache: yes
+
+- name: install kube
+  apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+
+- name: hold kube
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+
+- name: cdriver setting
+  copy:
+    remote_src: no
+    src: kubelet
+    dest: /etc/default/kubelet
