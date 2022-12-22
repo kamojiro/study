@@ -1,0 +1,12 @@
+/home/ochir/study/rust/web_scraper/target/debug/deps/scraper-95bcbcf3ff2a7e72.rmeta: /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/lib.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/element_ref/mod.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/element_ref/element.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/element_ref/serializable.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/html/mod.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/html/tree_sink.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/node.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/selector.rs
+
+/home/ochir/study/rust/web_scraper/target/debug/deps/scraper-95bcbcf3ff2a7e72.d: /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/lib.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/element_ref/mod.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/element_ref/element.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/element_ref/serializable.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/html/mod.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/html/tree_sink.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/node.rs /home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/selector.rs
+
+/home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/lib.rs:
+/home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/element_ref/mod.rs:
+/home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/element_ref/element.rs:
+/home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/element_ref/serializable.rs:
+/home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/html/mod.rs:
+/home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/html/tree_sink.rs:
+/home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/node.rs:
+/home/ochir/.cargo/registry/src/github.com-1ecc6299db9ec823/scraper-0.12.0/src/selector.rs:
