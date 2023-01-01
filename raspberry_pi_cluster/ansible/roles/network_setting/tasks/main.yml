@@ -14,7 +14,7 @@
 - name: edit hosts
   blockinfile:
     dest: /etc/hosts
-    insertafter: "127.0.0.1 localhost$"
+    insertafter: ".*127.0.0.1 localhost$"
     content: |
       192.168.1.101   k8s-master kube-master.kamoj.com
       192.168.1.102   k8s-worker1 kube-master1.kamoj.com
@@ -27,3 +27,14 @@
       net.ipv6.conf.default.disable_ipv6 = 1
       net.ipv6.conf.eth0.disable_ipv6 = 1
       net.ipv6.conf.lo.disable_ipv6 = 1
+
+- name: make k8s.conf
+  copy:
+    remote_src: no
+    src: k8s.conf
+    dest: /etc/sysctl.d/k8s.conf
+
+- name: activate overlay
+  shell: |
+    modprobe overlay
+    modprobe br_netfilter

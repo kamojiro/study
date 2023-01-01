@@ -289,7 +289,7 @@ sudo kubeadm init --apiserver-advertise-address=192.168.10.101 --pod-network-cid
 
 - apiserver-advertise-address
   - このオプションを利用して明示的にAPIサーバーのadvertise addressを設定します。
-  - 明示的に指定しない場合はデフォルトゲートウェイに関連付けられたネットワークインターフェースを使用して設定されます。
+  - 明示的に指定しない場合はデフォルトゲートウェ 佐野なつイに関連付けられたネットワークインターフェースを使用して設定されます。
 - pod-network-cidr
   - Flannelを使用する場合、こちらを指定する必要があります。
   - Flannelはノード間をつなぐネットワークに仮想的なトンネルを構成することで、クラスター内のPod同士の通信を実現しています。
@@ -312,6 +312,13 @@ echo "source <(kubectl completion bash)" >> $HOME/.bashrc
 # 変更を適用
 source ~/.bashrc
 ```
+
+- [Fail running on Raspberry Pi Ubuntu 21.10](https://github.com/k3s-io/k3s/issues/4234)
+
+```bash
+sudo apt install linux-modules-extra-raspi && sudo reboot
+```
+
 
 Flannel
 
@@ -339,7 +346,11 @@ kubectl get pod -n metallb-system
 ## ワーカーノードをクラスターにジョイン
 
 ```bash
-sudo kubeadm join 192.168.1.101:6443 --token y2grpy.nbvcyr1em9o5aigj　--discovery-token-ca-cert-hash sha256:3e9ef8910b95e0a366041c1e156b7cbd6802df4c857cd53ad59bbba631749983
+modprobe br_netfilter
+```
+
+```bash
+sudo kubeadm join 192.168.1.101:6443 --token 3u2z7v.qx81p3azvu15ftzw --discovery-token-ca-cert-hash sha256:0e731a79605ba03cfbc823e86e8b81b2fcdcf7f1887c1d2d86239ed87fff8d04
 ```
 
 ```bash
@@ -349,6 +360,46 @@ kubectl get nodes
 ```bash
 kubectl label node k8s-worker1 node-role.kubernetes.io/worker=worker
 kubectl label node k8s-worker2 node-role.kubernetes.io/worker=worker
+```
+
+```bash
+ubuntu@k8s-master:~$ kubectl get nodes
+NAME          STATUS   ROLES           AGE   VERSION
+k8s-master    Ready    control-plane   46h   v1.26.0
+k8s-worker1   Ready    <none>          14m   v1.26.0
+k8s-worker2   Ready    <none>          81s   v1.26.0
+```
+
+```bash
+kubectl label node k8s-worker1 node-role.kubernetes.io/worker=worker
+kubectl label node k8s-worker2 node-role.kubernetes.io/worker=worker
+```
+
+```bash
+ubuntu@k8s-master:~$ kubectl get nodes
+NAME          STATUS   ROLES           AGE   VERSION
+k8s-master    Ready    control-plane   46h   v1.26.0
+k8s-worker1   Ready    worker          33m   v1.26.0
+k8s-worker2   Ready    worker          19m   v1.26.0
+ubuntu@k8s-master:~$ kubectl get pods --all-namespaces 
+NAMESPACE        NAME                                 READY   STATUS    RESTARTS       AGE
+kube-flannel     kube-flannel-ds-dm67n                1/1     Running   0              33m
+kube-flannel     kube-flannel-ds-hj2zl                1/1     Running   516            45h
+kube-flannel     kube-flannel-ds-kx9c8                1/1     Running   0              20m
+kube-system      coredns-787d4945fb-dhmzs             1/1     Running   0              46h
+kube-system      coredns-787d4945fb-zjp28             1/1     Running   0              46h
+kube-system      etcd-k8s-master                      1/1     Running   1              46h
+kube-system      kube-apiserver-k8s-master            1/1     Running   1              46h
+kube-system      kube-controller-manager-k8s-master   1/1     Running   1              46h
+kube-system      kube-proxy-5hxm7                     1/1     Running   1              46h
+kube-system      kube-proxy-8dtn8                     1/1     Running   0              20m
+kube-system      kube-proxy-xfrd2                     1/1     Running   0              33m
+kube-system      kube-scheduler-k8s-master            1/1     Running   1              46h
+metallb-system   controller-577b5bdfcc-ql2fb          1/1     Running   1 (31m ago)    4h28m
+metallb-system   speaker-j5shp                        1/1     Running   0              19m
+metallb-system   speaker-lfvxc                        1/1     Running   0              32m
+metallb-system   speaker-ttxpb                        1/1     Running   2 (101m ago)   4h28m
+ubuntu@k8s-master:~$ 
 ```
 
 ## サービスメッシュ
@@ -371,8 +422,7 @@ Linkerd のシェアがトップらしいので使う。
 ## reset
 
 ```bash
-sudo kubeadm reset && rm ~/.kube/config
-sudo iptables -F && sudo iptables -t nat -F && sudo iptables -t mangle -F && sudo iptables -X
+sudo kubeadm reset && rm ~/.kube/config && rm -r /etc/cni/net.d && sudo iptables -F && sudo iptables -t nat -F && sudo iptables -t mangle -F && sudo iptables -X
 sudo kubeadm init --apiserver-advertise-address=192.168.10.101 --pod-network-cidr=10.244.0.0/16
 sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config && sudo chown $(id -u):$(id -g) ~/.kube/config
 ```
@@ -474,6 +524,21 @@ sudo sysctl -w net.ipv6.conf.tun0.disable_ipv6=0
 sudo sysctl -p
 ```
 
+### Nov 28 23:54:59 k8s-master kubelet[6780]: E1128 23:54:59.364417    6780 dns.go:157] "Nameserver limits exceeded" err="Nameserver limits were exceeded, some nameservers have been omitted, the applied nameserver line is: 192.168.10.1 240b:11:2381:4400:8222:a7ff:fe94:4836 192.168.10.>
+
+```log
+Nov 28 23:54:59 k8s-master kubelet[6780]: E1128 23:54:59.364417    6780 dns.go:157] "Nameserver limits exceeded" err="Nameserver limits were exceeded, some nameservers have been omitted, the applied nameserver line is: 192.168.10.1 240b:11:2381:4400:8222:a7ff:fe94:4836 192.168.10.>
+Nov 28 23:55:01 k8s-master kubelet[6780]: E1128 23:55:01.826109    6780 kubelet.go:2373] "Container runtime network not ready" networkReady="NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: cni plugin not initialized"
+```
+
+### Container runtime network not ready" networkReady="NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: cni plugin not initialized
+
+kubelet
+
+
+
+
+
 ### failed to set bridge addr: could not add IP address to "cni0": permission denied
 
 
@@ -482,7 +547,33 @@ sudo sysctl -p
 
 - [ Error registering network: operation not supported #1028 ](https://github.com/flannel-io/flannel/issues/1028)
 
+### Container runtime network not ready: cni config uninitialized
 
+- [Container runtime network not ready: cni config uninitialized](https://stackoverflow.com/questions/49112336/container-runtime-network-not-ready-cni-config-uninitialized)
+
+### coredns Pending
+
+- [Installing a Pod network add-on](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
+
+You must deploy a Container Network Interface (CNI) based Pod network add-on so that your Pods can communicate with each other. Cluster DNS (CoreDNS) will not start up before a network is installed.
+
+CoreDNS は CNI ベースのポッドネットワークアドオンをデプロイする必要がある
+
+### Error registering network: operation not supported
+
+- [Error registering network: operation not supported](https://github.com/flannel-io/flannel/issues/1028)
+- [Error registering network: operation not supported #905](https://github.com/flannel-io/flannel/issues/905)
+- [flannel error: Error registering network: operation not supported](https://www.reddit.com/r/kubernetes/comments/u1hzra/flannel_error_error_registering_network_operation/)
+
+現状
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+```
+
+## Failed to check for processor microcode upgrades.
+
+- [Ubuntu 22.04 LTS on WSLで出るエラー対処 : Failed to retrieve available kernel versions. Failed to check for processor microcode upgrades.](https://level69.net/archives/30464)
 
 ## log
 
@@ -493,7 +584,7 @@ ubuntu@k8s-master:~$ sudo kubeadm init --apiserver-advertise-address=192.168.10.
         [WARNING SystemVerification]: missing optional cgroups: blkio                                                                                                                                                                                                                     
 [preflight] Pulling images required for setting up a Kubernetes cluster                                                                                                                                                                                                                   
 [preflight] This might take a minute or two, depending on the speed of your internet connection                                                                                                                                                                                           
-[preflight] You can also perform this action in beforehand using 'kubeadm config images pull'                                                                                                                                                                                             
+[preflight] You can also perform this action in beforehand using 'kubeadm config images pull'                                                                 そういうことするんですねー                                                                                                                             
 [certs] Using certificateDir folder "/etc/kubernetes/pki"                                                                                                                                                                                                                                 
 [certs] Generating "ca" certificate and key                                                                                                                                                                                                                                               
 [certs] Generating "apiserver" certificate and key                                                                                                                                                                                                                                        

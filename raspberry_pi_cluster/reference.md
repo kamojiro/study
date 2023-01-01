@@ -10,3 +10,6 @@
 - [2022: Raspberry Piで動かしていたKubernetesクラスターを壊した私(後半）](https://gavin-zhou.medium.com/raspberry-pi%E3%81%A7%E5%8B%95%E3%81%8B%E3%81%97%E3%81%A6%E3%81%84%E3%81%9Fkubernetes%E3%82%AF%E3%83%A9%E3%82%B9%E3%82%BF%E3%83%BC%E3%82%92%E5%A3%8A%E3%81%97%E3%81%9F%E7%A7%81-%E5%BE%8C%E5%8D%8A-5e946aca3595)
 - [2021: Raspberry PiでおうちKubernetesクラスタを構築する](https://www.sambaiz.net/article/356/)
 - [Kubernetes: Addon のインストール](https://kubernetes.io/ja/docs/concepts/cluster-administration/addons/)
+- [Kubernetes: Creating a cluster with kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
+- [cri-o: getting started](https://github.com/cri-o/cri-o#getting-started)
+- [Raspberry Pi 4BにKubernetesをインストール（2021年版）](https://blog.uyorum.net/post/k8s-on-rpi4/)

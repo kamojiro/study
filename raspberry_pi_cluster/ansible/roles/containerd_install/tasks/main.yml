@@ -1,0 +1,60 @@
+---
+
+- name: make 99-kubernetes-cri.conf
+  copy:
+    remote_src: no
+    src: 99-kubernetes-cri.conf
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+
+- name: activate 99-kubernetes-cri.conf
+  shell: sysctl --system
+- name: prepare to install containerd
+  apt:
+    name:
+      - curl
+      - gnupg2
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+
+- name: download gpg key for containerd
+  shell: |
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --batch --yes --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg
+
+- name: add docker repository
+  shell: |
+    add-apt-repository --yes "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+- name: apt update
+  apt:
+    update_cache: yes
+
+- name: install containerd
+  apt:
+    name: containerd
+
+- name: make /etc/containerd directory
+  file:
+    path: /etc/containerd
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "775"
+
+- name: containerd config
+  shell: |
+    containerd config default | tee /etc/containerd/config.toml >/dev/null 2>&1
+    sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+  
+- name: restart containerd
+  systemd:
+    name: containerd
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+
+- name: cdriver setting
+  copy:
+    remote_src: no
+    src: kubelet
+    dest: /etc/default/kubelet
