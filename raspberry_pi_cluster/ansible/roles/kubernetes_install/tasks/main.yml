@@ -1,6 +1,7 @@
 ---
 
 - name: install vxlan module
+  # Flannel use VXLAN
   apt:
     name:
       - linux-modules-extra-raspi

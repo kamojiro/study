@@ -12,6 +12,7 @@
 - name: apply netplan
   shell: netplan apply
 - name: edit hosts
+  # 設定できてないことがあるの要確認
   blockinfile:
     dest: /etc/hosts
     insertafter: ".*127.0.0.1 localhost$"
