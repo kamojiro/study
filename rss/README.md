@@ -1,0 +1,2 @@
+- [discord bot](https://qiita.com/shown_it/items/6e7fb7777f45008e0496)
+- [deepseek](https://github.com/langchain-ai/langchain/blob/master/libs/partners/deepseek/langchain_deepseek/chat_models.py)
